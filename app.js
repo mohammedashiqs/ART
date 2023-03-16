@@ -2,11 +2,13 @@ const express = require('express');
 const hbs = require('express-handlebars')
 const fileUpload = require('express-fileupload')  //for upload file
 const db = require('./config/connection')
+const session = require('express-session')
 
 const userRouter = require('./routes/user');
 const adminRouter = require('./routes/admin');
 
 const app = express();
+
 
 // view engine setup
 app.set('view engine', 'hbs');
@@ -14,6 +16,7 @@ app.engine('hbs', hbs.engine({extname:'hbs',defaultLayout:'layout',layoutDir:__d
 
 app.use(express.static('public'));
 app.use(fileUpload())
+app.use(session({secret:'Key', cookie:{maxAge: 600000}}))  //session created
 
 db.connect((err)=>{
   if(err) console.log('database error',err)
