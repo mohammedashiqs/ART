@@ -1,0 +1,20 @@
+{
+  "name": "artsite2",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.3",
+    "express": "~4.16.1",
+    "express-fileupload": "^1.4.0",
+    "express-handlebars": "^7.0.2",
+    "hbs": "~4.0.4",
+    "mongodb": "^4.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.21"
+  }
+}
