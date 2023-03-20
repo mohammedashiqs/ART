@@ -1,3 +1,6 @@
+
+
+
 const mongoClient = require('mongodb').MongoClient
 
 const State={
@@ -6,7 +9,7 @@ const State={
 
 
 module.exports.connect = function(done){
-  const url = 'mongodb+srv://ashiq123:ashiq123@cluster0.weom3j5.mongodb.net/?retryWrites=true&w=majority'
+  const url = process.env.MONGODB_URI
   const dbname = 'ART'
 
   mongoClient.connect(url,(err,data)=>{

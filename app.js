@@ -3,9 +3,10 @@ const hbs = require('express-handlebars')
 const fileUpload = require('express-fileupload')  //for upload file
 const db = require('./config/connection')
 const session = require('express-session')
-
 const userRouter = require('./routes/user');
 const adminRouter = require('./routes/admin');
+
+require('dotenv').config()
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.engine('hbs', hbs.engine({extname:'hbs',defaultLayout:'layout',layoutDir:__d
 
 app.use(express.static('public'));
 app.use(fileUpload())
-app.use(session({secret:'Key', cookie:{maxAge: 600000}}))  //session created
+app.use(session({secret: process.env.SESSION_SECRET, cookie:{maxAge: 600000}}))  //session created
 
 db.connect((err)=>{
   if(err) console.log('database error',err)
