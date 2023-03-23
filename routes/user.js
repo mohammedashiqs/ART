@@ -13,11 +13,15 @@ const varifyLogin = (req, res, next) => {
 }
 
 /* GET home page. */
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   let user = req.session.user
-  console.log(user);
+  let cartCount = null
+  if(req.session.user){
+    cartCount = await userHelper.getCartCount(req.session.user._id)
+  }
+  
   productHelper.getAllProducts().then((products) => {
-    res.render('user/view-products', {products, user});
+    res.render('user/view-products', {products, user, cartCount});
   })
  
   
@@ -65,8 +69,23 @@ router.get('/logout', (req, res) => {
   res.redirect('/')
 })
 
-router.get('/cart', varifyLogin, (req, res) => {
-  res.render('user/cart')
+router.get('/cart', varifyLogin, async (req, res) => {
+  let products = await userHelper.getCartProducts(req.session.user._id)
+  res.render('user/cart',{products, user: req.session.user})
+})
+
+
+router.get('/add-to-cart/:id', (req, res) => {
+  console.log("api call");
+  userHelper.addToCart(req.params.id, req.session.user._id).then((resoponse) => {
+    res.json({status:true})
+  })
+})
+
+router.post('/change-product-quantity', (req, res) => {
+  userHelper.changeProductQuantity(req.body).then(() => {
+
+  })
 })
 
 
