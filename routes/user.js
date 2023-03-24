@@ -71,23 +71,36 @@ router.get('/logout', (req, res) => {
 
 router.get('/cart', varifyLogin, async (req, res) => {
   let products = await userHelper.getCartProducts(req.session.user._id)
-  res.render('user/cart',{products, user: req.session.user})
+  let totalValue = await userHelper.getTotalAmount(req.session.user._id)
+  res.render('user/cart',{products, user: req.session.user, totalValue})
 })
 
 
 router.get('/add-to-cart/:id', (req, res) => {
   console.log("api call");
-  userHelper.addToCart(req.params.id, req.session.user._id).then((resoponse) => {
+  userHelper.addToCart(req.params.id, req.session.user._id).then((response) => {
     res.json({status:true})
   })
 })
 
 router.post('/change-product-quantity', (req, res) => {
-  userHelper.changeProductQuantity(req.body).then((resoponse) => {
-   res.json(resoponse)
+  userHelper.changeProductQuantity(req.body).then( async (response) => {
+    response.total = await userHelper.getTotalAmount(req.body.user)
+   res.json(response)
   })
 })
 
+
+router.post('/delete-Product', (req, res) => {
+  userHelper.deleteProduct(req.body).then((response) => {
+    res.json(response)
+  })
+})
+
+router.get('/place-order', varifyLogin, async (req, res) => {
+  let total = await userHelper.getTotalAmount(req.session.user._id)
+  res.render('user/place-order',{total})
+})
 
 
 module.exports = router;

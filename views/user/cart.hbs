@@ -6,6 +6,7 @@
                 <tr>
                     <th scope="col">Item</th>
                     <th scope="col">Title</th>
+                    <th scope="col">Price</th>
                     <th scope="col">Quantity</th>
                 </tr>
             </thead>
@@ -19,17 +20,19 @@
                     {{!-- only public folder can directly access from frotend, so starting form slash / --}}
 
                     <td>{{this.product.name}}</td>
+                    <td>{{this.product.price}}</td>
 
                     <td>
                         <button class="cart-item-count mr-3"
-                            onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', -1)">-</button>
+                            onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', '{{../user._id}}', -1)">-</button>
                         <span id="{{this.product._id}}"> {{this.quantity}} </span>
                         <button class="cart-item-count mr-3"
-                            onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', 1)">+</button>
+                            onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', '{{../user._id}}', 1)">+</button>
                     </td>
 
                     <td>
-                        <a href="" class="btn btn-danger">Remove</a>
+                        <button onclick="removeProduct('{{this._id}}', '{{this.product._id}}')"
+                            class="btn btn-danger">Remove</button>
                     </td>
 
                 </tr>
@@ -38,20 +41,24 @@
             </tbody>
 
         </table>
-
+        <hr>
+        <div class="float-end pe-5">
+        <h3 class="float-start me-5 mt-4">Total: Rs.<span id="total">{{totalValue}}</span></h3>
+        <a href="/place-order" class="float-end btn btn-success mt-3" style="width: 100%;"> <b>Place Order</b> </a>
+        </div>
     </div>
 </section>
 
 
 <script>
-    function changeQuantity(cartId, prodId, count) {
-        console.log('ehll')
-        let quantity = parseInt( document.getElementById(prodId).innerHTML )
+    function changeQuantity(cartId, prodId, userId, count) {
+        let quantity = parseInt(document.getElementById(prodId).innerHTML)
         count = parseInt(count)
 
         $.ajax({
             url: '/change-product-quantity',
             data: {
+                user: userId,
                 cart: cartId,
                 product: prodId,
                 count: count,
@@ -64,7 +71,24 @@
                     location.reload()
                 } else {
                     document.getElementById(prodId).innerHTML = quantity + count
+                    document.getElementById('total').innerHTML = response.total
                 }
+            }
+        })
+    }
+
+    function removeProduct(cartId, prodId){
+
+        $.ajax({
+            url: '/delete-Product',
+            data: {
+                cart: cartId,
+                product: prodId
+            },
+            method: 'post',
+            success: (response) => {
+                console.log(response)
+                location.reload()
             }
         })
     }
