@@ -4,8 +4,8 @@ const router = express.Router();
 const productHelper = require('../helpers/product-helpers')
 const userHelper = require('../helpers/user-helpers')
 
-const varifyLogin = (req, res, next) => {
-  if(req.session.loggedIn){
+const verifyLogin = (req, res, next) => {
+  if(req.session.user.loggedIn){
     next()
   }else{
     res.redirect('/login')
@@ -28,12 +28,11 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-  console.log(req.session.loggedIn)
-  if(req.session.loggedIn){
+  if(req.session.user){
     res.redirect('/')
   }else{
-    res.render('user/login', {loginError:req.session.loginError})
-    req.session.loginError = false
+    res.render('user/login', {loginError:req.session.userLoginError})
+    req.session.userLoginError = false
   }
   
 })
@@ -45,8 +44,9 @@ router.get('/signup', (req, res) => {
 router.post('/signup', (req, res) => {
   console.log(req.body)
   userHelper.doSignup(req.body).then((response) => {
-    req.session.loggedIn = true
+    
     req.session.user = response   //now we can't get inserted doc detail as return so i have to change later
+    req.session.user.loggedIn = true
     res.redirect('/')
   })
 })
@@ -54,24 +54,29 @@ router.post('/signup', (req, res) => {
 router.post('/login', (req, res) => {
   userHelper.doLogin(req.body).then((response) => {
     if(response.status){
-      req.session.loggedIn = true
       req.session.user = response.user
+      req.session.user.loggedIn = true
       res.redirect('/')
     }else{
-      req.session.loginError = "Invalid username or password"
+      req.session.userLoginError = "Invalid username or password"
       res.redirect('/login')
     }
   })
 })
 
 router.get('/logout', (req, res) => {
-  req.session.destroy()
+  req.session.user = null
+  req.session.userLoggedIn = false
   res.redirect('/')
 })
 
-router.get('/cart', varifyLogin, async (req, res) => {
+router.get('/cart', verifyLogin, async (req, res) => {
   let products = await userHelper.getCartProducts(req.session.user._id)
-  let totalValue = await userHelper.getTotalAmount(req.session.user._id)
+  let totalValue = 0;
+  if(products.length>0){
+    totalValue = await userHelper.getTotalAmount(req.session.user._id)
+  }
+  
   res.render('user/cart',{products, user: req.session.user, totalValue})
 })
 
@@ -97,7 +102,7 @@ router.post('/delete-Product', (req, res) => {
   })
 })
 
-router.get('/place-order', varifyLogin, async (req, res) => {
+router.get('/place-order', verifyLogin, async (req, res) => {
   let total = await userHelper.getTotalAmount(req.session.user._id)
   res.render('user/place-order',{total, user:req.session.user})
 })
@@ -105,27 +110,46 @@ router.get('/place-order', varifyLogin, async (req, res) => {
 router.post('/place-order', async (req, res) => {
   let  products = await userHelper.getCartProductList(req.body.userId)
   let  totalPrice = await userHelper.getTotalAmount(req.body.userId)
-     userHelper.placeOrder(req.body, products, totalPrice).then((response) => {
-      res.json({status: true})
+     userHelper.placeOrder(req.body, products, totalPrice).then((orderId) => {
+      if(req.body['payment-method'] === 'COD'){
+      res.json({codSuccess: true})
+      }else{
+        userHelper.generateRazorpay(orderId, totalPrice).then((response) => {
+          res.json(response)
+        })
+      }
      })
   
 })
 
-router.get('/order-success', varifyLogin, async (req, res) => {
+router.get('/order-success', verifyLogin, async (req, res) => {
   res.render('user/order-success', {user: req.session.user})
 })
 
-router.get('/orders', varifyLogin, async (req, res) => {
+router.get('/orders', verifyLogin, async (req, res) => {
     await userHelper.getUserOrders(req.session.user._id).then((orders) => {
     res.render('user/orders', {orders, user: req.session.user})
   })
   
 })
 
-router.get('/view-order-products/:orderId', varifyLogin, (req, res) => {
+router.get('/view-order-products/:orderId', verifyLogin, (req, res) => {
     userHelper.viewOrderProducts(req.params.orderId).then((orderItems) => {
       res.render('user/view-order-products', {orderItems, user: req.session.user})
     })
+})
+
+router.post('/verify-payment', (req, res) => {
+  console.log(req.body);
+  userHelper.verifyPayment(req.body).then(() => {
+    userHelper.changePaymentStatus(req.body['order[receipt]']).then(() => {
+      console.log('Payment successfull');
+      res.json({status:true})
+    })
+  }).catch((err) => {
+    console.log(err);
+    res.json({status: false, errMsg: ''})
+  })
 })
 
 module.exports = router;

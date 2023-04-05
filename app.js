@@ -1,12 +1,13 @@
 const express = require('express');
-const hbs = require('express-handlebars')
+require('dotenv').config()
+const hbs = require('express-handlebars')  //npx express-generator --view=hbs
 const fileUpload = require('express-fileupload')  //for upload file
 const db = require('./config/connection')
 const session = require('express-session')
 const userRouter = require('./routes/user');
 const adminRouter = require('./routes/admin');
 
-require('dotenv').config()
+
 
 const app = express();
 
@@ -26,8 +27,9 @@ db.connect((err)=>{
 
 app.use(express.urlencoded({ extended: false }));  //(NB: without this signup form did't work(not get body), but addproduct worked)
 
-app.use('/', userRouter);
 app.use('/admin', adminRouter);
+app.use('/', userRouter);
+
 
 
 app.listen(process.env.PORT || 5000,()=>{
