@@ -33,5 +33,5 @@ app.use('/', userRouter);
 
 
 app.listen(process.env.PORT || 5000,()=>{
-  console.log("server is running.......")
+  console.log("server is running on port 5000.......")
 }) 

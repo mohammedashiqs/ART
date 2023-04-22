@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const productHelper = require('../helpers/product-helpers')
+const adminHelper = require('../helpers/admin-helpers')
 
 
 const adminInfo = {
@@ -85,9 +86,25 @@ router.post('/edit-product/:id', verifyLogin, (req, res) => {
   productHelper.updateProduct(req.params.id, req.body).then((response) => {
     console.log(response);
     res.redirect('/admin')
-    let image = req.files.image
+    let image =  req.files.image
     image.mv('./public/product-images/'+req.params.id+'.jpg')
   })
+})
+
+router.get('/all-users', (req, res) => {
+
+    adminHelper.getAllUsers().then((users) => {
+      res.render('admin/all-users', {users, admin: true})
+    })
+
+  
+})
+
+router.get('/all-orders', (req, res) => {
+    adminHelper.getAllOrders().then((orders) => {
+      res.render('admin/all-orders', {orders, admin: true})
+    })
+    
 })
 
 module.exports = router;

@@ -31,6 +31,7 @@ module.exports = {
                     if (status) {
                         console.log("login success")
                         response.user = user
+                        //response.user.loggedIn = true
                         response.status = true
                         resolve(response)
                     } else {
@@ -209,7 +210,9 @@ module.exports = {
                 }
             ]).toArray()
 
+            if(total[0]){
             resolve(total[0].total)
+            }
 
         })
     },

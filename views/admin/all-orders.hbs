@@ -1,0 +1,39 @@
+<section>
+    <div class="container">
+
+        <div class="row mt-4">
+            <a href="#" role="button" class="btn btn-success ms-auto col-2">Add User</a>
+        </div>
+
+        <table class="table mt-5" id="productsTable">
+            <thead>
+                <tr>
+                    <th scope="col">Sl</th>
+                    <th scope="col">Ordered Date</th>
+                    <th scope="col">Delivery Address</th>
+                    <th scope="col">payment Method</th>
+                    <th scope="col">Total Amount</th>
+                    <th scope="col">Order Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each orders}}
+                <tr>
+                    <th scope="row">1</th>
+                    <td>{{this.date}}</td>
+                    <td>{{this.deliveryDetails.address}}</td>
+                    <td>{{this.paymentMethod}}</td>
+                    <td>{{this.totalAmount}}</td>
+                    <td>{{this.status}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<script>
+    $(function () {
+        $('#productsTable').DataTable();
+    })
+</script>
