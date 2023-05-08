@@ -1,10 +1,9 @@
-<section>
+<section >
     <div class="container">
 
-        <div class="row mt-4">
-            <a href="/admin/add-product" role="button" class="btn btn-success ms-auto col-2">Add Product</a>
+        <div class="row mt-5 center">
+            <a href="/admin/add-product" role="button" class="btn btn-success col-2" style="margin-top: inherit;">Add Product</a>
         </div>
-
         <table class="table mt-5" id="productsTable">
             <thead>
                 <tr>
@@ -20,10 +19,10 @@
             <tbody>
                 {{#each products}}
                 <tr>
-                    <th scope="row">1</th>
-                    <td>{{this.name}}</td>
+                    <th scope="row">{{@index}}</th>
+                    <td>{{this.brand}}</td>
                     <td>{{this.price}}</td>
-                    <td>{{this.category}}</td>
+                    <td>{{this.subCategory}}</td> 
                     <td>{{this.description}}</td>
                     <td><img style="width: 50px; height:50px" src="/product-images/{{this._id}}.jpg" alt=""></td>
                     <td>

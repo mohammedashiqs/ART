@@ -1,5 +1,8 @@
-<section>
-    <div class="container">
+<div class="mt-5 d-flex justify-content-center fixed-top bg-white">
+    <h1 class="landfont mt-4">ORDERS</h1>
+</div>
+<section class=" pt-2">
+    <div class="container mt-5 pt-5">
 
         <table class="table mt-5">
             <thead>
@@ -19,8 +22,8 @@
                     </td>
                     {{!-- only public folder can directly access from frotend, so starting form slash / --}}
 
-                    <td>{{this.product.name}}</td>
-                    <td>{{this.product.price}}</td>
+                    <td>{{this.product.brand}}</td>
+                    <td>{{this.product.discountPrice}}</td>
 
                     <td>
                         <button class="cart-item-count mr-3"

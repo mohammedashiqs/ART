@@ -1,0 +1,20 @@
+<div class="mt-5 d-flex justify-content-center fixed-top bg-white">
+    <h1 class="landfont mt-4"> MY WISHLIST</h1>
+</div>
+
+<section class="pt-5 mt-3">
+  <div class="container mt-5">
+    <div class="row">
+      {{#each products}}
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 p-3">
+      <div class="card">
+         <div class="card-img-wrap"><img class="card-img-top" src="/product-images/{{this.product._id}}.jpg" alt="Denim Jeans" style="width:100%"></div>
+        <span><b>{{this.product.brand}}</b></span>
+        <span class="price"> <b>{{this.product.discountPrice}}</b></span>
+        <p><button onclick="addToCart('{{this.product._id}}')">Add to Cart</button></p>
+      </div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</section>

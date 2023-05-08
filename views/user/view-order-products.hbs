@@ -1,18 +1,21 @@
-<section>
-    <div class="container mt-5">
-        <div class="row">
-            {{#each orderItems}}
-            <div class="col-md-3 p-3">
-                <div class="card" style="width: 15rem; height: 24rem">
-                    <img src='/product-images/{{this.item}}.jpg' class="card-img-top" alt="Card img cap" style="height: 14rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">{{this.product.name}}</h5>
-                        <p class="card-text">Rs. {{this.product.price}}</p>
-                        <p class="card-text">Quantity: {{this.quantity}}</p>
-                    </div>
-                </div>
-            </div>
-            {{/each}}
+
+
+<section class="ms-5">
+    
+  <div class="container mt-5">
+    <div class="row">
+        <h1 class="d-flex justify-content-center">Orders</h1>
+      {{#each orderItems}}
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 pt-3">
+        <div class="card">
+          <div class="card-img-wrap"><img class="card-img-top" src="/product-images/{{this.item}}.jpg" alt="Denim Jeans"
+              style="width:100%"></div>
+          <span><b>{{this.product.brand}}</b></span>
+          <span>Quantity: {{this.quantity}}</span>
+          <span class="price"> <b> Rs. {{this.product.discountPrice}}</b></span>
         </div>
+      </div>
+      {{/each}}
     </div>
+  </div>
 </section>

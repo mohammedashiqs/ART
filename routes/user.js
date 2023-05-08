@@ -23,13 +23,73 @@ router.get('/', async (req, res) => {
   if (req.session.user) {
     cartCount = await userHelper.getCartCount(req.session.user._id)
   }
+  let section =    await userHelper.getAllSections()
+  
+  userHelper.getAllCategories().then((subCategories) => {
+    console.log(subCategories, section);
+    res.render('user/landingPage', { subCategories,section, user, cartCount });
+  })
+
+
+});
+
+router.get('/view-products', async (req, res) => {
+  let user = req.session.user
+  let cartCount = null
+  if (req.session.user) {
+    cartCount = await userHelper.getCartCount(req.session.user._id)
+  }
+
+  let data = {};
+
+  data = {
+    filter: {}
+  }
+
+  if (req.query.subCategory) {
+    data.filter.subCategory = req.query.subCategory
+  }
+  if (req.query.gender) {
+    data.filter.gender = req.query.gender
+  }
+  if (req.query.brand) {
+    data.filter.brand = req.query.brand
+  }
+  if (req.query.color) {
+    data.filter.color = req.query.color
+  }
+
+
+  console.log(data);
+
+  productHelper.getAllProducts(data).then((products) => {
+    console.log(products);
+
+    let subCategoryName;
+    if (req.query.subCategory) {
+      subCategoryName =  products.length != 0? products[0].subCategory : "All Products"
+    } 
+
+    res.render('user/view-products', { products, subCategoryName, user, cartCount });
+  })
+
+
+})
+
+router.get('/view-products/category', async (req, res) => {
+  let user = req.session.user
+  let cartCount = null
+  if (req.session.user) {
+    cartCount = await userHelper.getCartCount(req.session.user._id)
+  }
 
   productHelper.getAllProducts().then((products) => {
     res.render('user/view-products', { products, user, cartCount });
   })
 
 
-});
+})
+
 
 router.get('/login', (req, res) => {
   if (req.session.user) {
@@ -86,6 +146,18 @@ router.get('/cart', verifyLogin, async (req, res) => {
 })
 
 
+router.get('/wishlist', verifyLogin, async (req, res) => {
+
+  let cartCount = null
+  if (req.session.user) {
+    cartCount = await userHelper.getCartCount(req.session.user._id)
+  }
+  let products = await userHelper.getWishlistProducts(req.session.user._id)
+  console.log(products);
+  res.render('user/wishlist', {products, user: req.session.user, cartCount})
+})
+
+
 router.get('/add-to-cart/:id', (req, res) => {
   console.log("api call");
   userHelper.addToCart(req.params.id, req.session.user._id).then((response) => {
@@ -93,9 +165,18 @@ router.get('/add-to-cart/:id', (req, res) => {
   })
 })
 
+router.get('/add-to-wishlist/:id', (req, res) => {
+  console.log(req.params);
+  console.log('api call call')
+  userHelper.addToWishlist(req.params.id, req.session.user._id).then((response) => {
+    res.json({ status: true })
+  })
+})
+
 router.post('/change-product-quantity', (req, res) => {
   userHelper.changeProductQuantity(req.body).then(async (response) => {
     response.total = await userHelper.getTotalAmount(req.body.user)
+    console.log(response);
     res.json(response)
   })
 })

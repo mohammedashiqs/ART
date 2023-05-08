@@ -11,9 +11,11 @@ module.exports = {
             callback(data.insertedId)
         })
     },
-    getAllProducts: () => {
+    getAllProducts: (data) => {
+        let filter = data.filter
+        console.log(filter);
         return new Promise(async (resolve, reject) => {
-            let products = await db.get().collection(collection.PRODUCT_COLLECTION).find().toArray()
+            let products = await db.get().collection(collection.PRODUCT_COLLECTION).find(filter).toArray()
             resolve(products)
         })
     },
