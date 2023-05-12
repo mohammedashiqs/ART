@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 require('dotenv').config()
 const hbs = require('express-handlebars')  //npx express-generator --view=hbs
